@@ -1,0 +1,51 @@
+#!/usr/bin/env python
+# -*- coding=utf-8 -*-
+# 
+# Copyright © 2012 Jude Robinson (dotcode at gmail dot com | @dotcode)
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+from BeautifulSoup import BeautifulSoup
+import urllib2
+import re
+import datetime
+
+now = datetime.datetime.now()
+
+# only run if between 9am and 2pm
+if now.strftime('%H') > '09' and now.strftime('%H') < '14':
+
+	page = urllib2.urlopen('http://eat.st/kings-cross/')
+
+	soup = BeautifulSoup(page)
+	soup.prettify()
+
+	# find the first date block (which is always the next eat st occurrence)
+	# The date is held inside a div.heading-blue
+	firstDateHeading = soup.find('div', 'heading-blue').contents[0].string
+	date = re.sub('^[^0-9]+', '', firstDateHeading)
+	day = re.search('^[0-9]+', date)
+	monthYear = re.search('[a-zA-Z]+ [0-9]+$', date)
+	firstDate = day.group(0) + ' ' + monthYear.group(0)
+
+	# see if that first date matches today's date
+	if now.strftime('%d %b %Y') == firstDate:
+		anotherDateHeading = False
+		for item in soup.findAll('div', 'altText'):
+			if anotherDateHeading == False:
+				if item.nextSibling.nextSibling['class'] == 'altText':
+					print item.contents[1].contents[0].contents[0].string
+				else:
+					print item.contents[1].contents[0].contents[0].string
+					anotherDateHeading = True
