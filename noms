@@ -29,23 +29,18 @@ if now.strftime('%H') >= '09' and now.strftime('%H') < '14':
 	page = urllib2.urlopen('http://eat.st/kings-cross/')
 
 	soup = BeautifulSoup(page)
-	soup.prettify()
 
 	# find the first date block (which is always the next eat st occurrence)
 	# The date is held inside a div.heading-blue
-	firstDateHeading = soup.find('div', 'heading-blue').contents[0].string
-	date = re.sub('^[^0-9]+', '', firstDateHeading)
+	firstDateHeading = soup.find('div', 'heading-blue')
+	date = re.sub('^[^0-9]+', '', firstDateHeading.contents[0].string)
 	day = re.search('^[0-9]+', date)
 	monthYear = re.search('[a-zA-Z]+ [0-9]+$', date)
 	firstDate = day.group(0) + ' ' + monthYear.group(0)
 
 	# see if that first date matches today's date
 	if now.strftime('%d %b %Y') == firstDate:
-		anotherDateHeading = False
-		for item in soup.findAll('div', 'altText'):
-			if anotherDateHeading == False:
-				if item.nextSibling.nextSibling['class'] == 'altText':
-					print item.contents[1].contents[0].contents[0].string
-				else:
-					print item.contents[1].contents[0].contents[0].string
-					anotherDateHeading = True
+		for item in firstDateHeading.findNextSiblings('div'):
+			if item['class'] != 'altText':
+				break
+			print item.find('h3').find('a').string
