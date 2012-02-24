@@ -24,7 +24,7 @@ import datetime
 now = datetime.datetime.now()
 
 # only run if between 9am and 2pm
-if now.strftime('%H') > '09' and now.strftime('%H') < '14':
+if now.strftime('%H') >= '09' and now.strftime('%H') < '14':
 
 	page = urllib2.urlopen('http://eat.st/kings-cross/')
 
