@@ -35,9 +35,9 @@ if now.strftime('%H') >= '09' and now.strftime('%H') < '14':
 	firstDateHeading = soup.find('div', 'heading-blue')
 	date = re.sub('^[^0-9]+', '', firstDateHeading.contents[0].string)
 	day = re.search('^[0-9]+', date)
-    # add leading zero to single digit dates
-    if len(day.group(0)) == 1:
-        day = '0' + day.group(0)
+	# add leading zero to single digit dates
+	if len(day.group(0)) == 1:
+		day = '0' + day.group(0)
 	monthYear = re.search('[a-zA-Z]+ [0-9]+$', date)
 	firstDate = day + ' ' + monthYear.group(0)
 
